@@ -1,0 +1,319 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<style>
+    /* Efecto de la máscara */
+    .mask-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh; /* Altura de la ventana visible */
+        overflow: hidden;
+    }
+
+    .mask-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        /* La máscara usa la imagen del logo */
+        -webkit-mask-image: url('/Logo/logo.PNG');
+        mask-image: url('/Logo/logo.PNG');
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        
+        /* GSAP controlará la posición inicial para centrar la A, aquí lo dejamos en 50% 50% por defecto */
+        -webkit-mask-position: 50% 50%; 
+        mask-position: 50% 50%;
+        
+        /* El tamaño inicial es gigante para ver el video a través */
+        -webkit-mask-size: 6000%;
+        mask-size: 6000%;
+        z-index: 10;
+    }
+
+    .video-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Imagen que aparece después de achicar la máscara */
+    .hero-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 125vh; /* 25vh extra para poder scrollear por debajo */
+        object-fit: cover;
+        object-position: 50% 65%; /* Desplaza la imagen hacia arriba para centrarla visualmente en la pantalla */
+        opacity: 0; /* Oculta inicialmente */
+        z-index: 5;
+    }
+
+    /* Altura total del scroll para la animación (aumentada para dar margen al final) */
+    .scroll-wrapper {
+        height: 300vh;
+        background-color: #000;
+    }
+
+    /* Fijar el contenedor visible mientras se scrollea el wrapper */
+    .sticky-container {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        width: 100%;
+        overflow: visible; /* Permite que la imagen sobresalga por abajo */
+    }
+</style>
+
+<!-- SECCIÓN 1: INICIO (HERO MASK ANIMATION) -->
+<section id="inicio" class="scroll-wrapper">
+    <div class="sticky-container" id="mask-sticky-container">
+        
+        <div class="mask-container">
+            <!-- La capa que tiene la máscara aplicada -->
+            <div class="mask-layer" id="logo-mask">
+                
+                <!-- Video de fondo (Escritorio) -->
+                <video class="video-background hidden md:block" id="video-desktop" autoplay muted loop playsinline>
+                    <source src="/Videos/Merlina43.mp4" type="video/mp4" />
+                </video>
+
+                <!-- Video de fondo (Móviles / Tablets) -->
+                <video class="video-background block md:hidden" id="video-mobile" autoplay muted loop playsinline>
+                    <source src="/Videos/Merlina916.mp4" type="video/mp4" />
+                </video>
+                
+            </div>
+
+            <!-- CAPA DE COLOR ORIGINAL (Aparece al hacer scroll) -->
+            <div id="logo-color" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('/Logo/logo.PNG'); background-repeat: no-repeat; opacity: 0; pointer-events: none; z-index: 15;"></div>
+            
+            <!-- CAPA DE FLASH (Solo brilla la silueta del logo) -->
+            <div id="logo-flash" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: white; mask-image: url('/Logo/logo.PNG'); -webkit-mask-image: url('/Logo/logo.PNG'); mask-repeat: no-repeat; -webkit-mask-repeat: no-repeat; opacity: 0; pointer-events: none; z-index: 40;"></div>
+        </div>
+        
+        <!-- IMAGEN FUERA DEL MASK CONTAINER PARA QUE PUEDA SOBRESALIR -->
+        <img src="/Imagenes/principaltodos.jpeg" class="hero-image" id="hero-img" alt="Principal Todos" />
+    </div>
+</section>
+
+<!-- SECCIÓN 2: EVENTOS -->
+<!-- Se agrega margin-top de 25vh para dejar espacio al cachito extra de la imagen -->
+<section id="eventos" class="min-h-screen bg-ab-dark py-20 px-4" style="margin-top: 25vh;">
+    <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl md:text-6xl font-bold mb-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-ab-accent to-yellow-200">Eventos</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Card Shows -->
+            <div class="group relative overflow-hidden rounded-xl bg-gray-900 aspect-video hover:-translate-y-2 transition-transform duration-300">
+                <div class="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors z-10"></div>
+                <div class="absolute inset-0 flex flex-col items-center justify-center z-20">
+                    <h3 class="text-3xl font-bold text-white mb-2">Shows</h3>
+                    <p class="text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity">Nuestras próximas presentaciones</p>
+                </div>
+            </div>
+            <!-- Card Competencias -->
+            <div class="group relative overflow-hidden rounded-xl bg-gray-900 aspect-video hover:-translate-y-2 transition-transform duration-300">
+                <div class="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors z-10"></div>
+                <div class="absolute inset-0 flex flex-col items-center justify-center z-20">
+                    <h3 class="text-3xl font-bold text-white mb-2">Competencias</h3>
+                    <p class="text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity">Audiciones y torneos</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECCIÓN 3: DISCIPLINA -->
+<section id="disciplina" class="min-h-screen bg-black py-20 px-4">
+    <div class="max-w-7xl mx-auto">
+        <h2 class="text-4xl md:text-6xl font-bold mb-12 text-center text-white">Disciplina</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Ejemplo de items de disciplina -->
+            <div class="h-64 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-ab-accent transition-colors cursor-pointer group">
+                <span class="text-xl font-bold group-hover:text-black transition-colors">Hip Hop</span>
+            </div>
+            <div class="h-64 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-ab-accent transition-colors cursor-pointer group">
+                <span class="text-xl font-bold group-hover:text-black transition-colors">Jazz</span>
+            </div>
+            <div class="h-64 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-ab-accent transition-colors cursor-pointer group">
+                <span class="text-xl font-bold group-hover:text-black transition-colors">Contemporáneo</span>
+            </div>
+            <div class="h-64 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-ab-accent transition-colors cursor-pointer group">
+                <span class="text-xl font-bold group-hover:text-black transition-colors">Ballet</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECCIÓN 4: CONTACTO -->
+<section id="contacto" class="min-h-screen bg-ab-dark py-20 px-4 flex items-center">
+    <div class="max-w-3xl mx-auto w-full bg-gray-900 p-8 rounded-2xl shadow-2xl border border-white/5">
+        <h2 class="text-4xl font-bold mb-8 text-center text-white">Contacto</h2>
+        <form class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Nombre</label>
+                <input type="text" class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-ab-accent transition-colors" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Email</label>
+                <input type="email" class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-ab-accent transition-colors" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-2">Mensaje</label>
+                <textarea rows="4" class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-ab-accent transition-colors"></textarea>
+            </div>
+            <button class="w-full bg-ab-accent text-black font-bold py-4 rounded-lg hover:bg-yellow-500 transition-colors">Enviar Mensaje</button>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Registrar ScrollTrigger de GSAP
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- LÓGICA DE ANIMACIÓN GSAP RESPONSIVA CON CAJA DELIMITADORA ---
+        
+        // 1. SISTEMA DE COORDENADAS [ymin, xmin, ymax, xmax] (0 a 1000)
+        // Modifica estos 4 valores para rodear la letra "A"
+        const boundingBox = [210, 620, 450, 650]; 
+        
+        // 2. Extraemos el centro y el tamaño (normalizados de 0 a 1)
+        const cx = ((boundingBox[1] + boundingBox[3]) / 2) / 1000; // Centro X
+        const cy = ((boundingBox[0] + boundingBox[2]) / 2) / 1000; // Centro Y
+        const bw = (boundingBox[3] - boundingBox[1]) / 1000;       // Ancho
+        const bh = (boundingBox[2] - boundingBox[0]) / 1000;       // Alto
+
+        // GSAP Timeline (lo creamos primero)
+        let tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: ".scroll-wrapper",
+                start: "top top", 
+                end: "bottom bottom", 
+                scrub: 1
+            }
+        });
+
+        // 3. Cargamos la imagen para conocer sus proporciones matemáticas reales
+        const img = new Image();
+        img.src = '/Logo/logo.PNG';
+        
+        img.onload = () => {
+            const imgAspect = img.width / img.height;
+            const maskElement = document.getElementById('logo-mask');
+            
+            // Objeto para animar el "progreso" de 0 a 1
+            let animData = { progress: 0 };
+            
+            // Función que calcula PÍXELES EXACTOS en cada frame para que sea 100% responsivo
+            function updateMask() {
+                const sw = window.innerWidth;
+                const sh = window.innerHeight;
+                const p = animData.progress;
+                
+                // --- INICIO (Zoom a la 'A') ---
+                // Calculamos cuánto escalar la imagen para que la caja delimitadora ocupe la pantalla
+                const startWidth = Math.max(sw / bw, (sh / bh) * imgAspect) * 1.1; 
+                const startHeight = startWidth / imgAspect;
+                const startX = (sw / 2) - (cx * startWidth);
+                const startY = (sh / 2) - (cy * startHeight);
+                
+                // --- FIN (Logo completo) ---
+                const finalWidth = sw * 0.22; // Tu 23%
+                const finalHeight = finalWidth / imgAspect;
+                const endCx = 0.599; // Tu 48%
+                const endCy = 0.12; // Tu 47%
+                const endX = (sw / 2) - (endCx * finalWidth);
+                const endY = (sh / 2) - (endCy * finalHeight);
+                
+                // --- INTERPOLACIÓN MÁGICA ---
+                const currentWidth = startWidth + (finalWidth - startWidth) * p;
+                const currentHeight = startHeight + (finalHeight - startHeight) * p;
+                const currentX = startX + (endX - startX) * p;
+                const currentY = startY + (endY - startY) * p;
+                
+                // Aplicamos directo al DOM de la máscara
+                maskElement.style.webkitMaskSize = `${currentWidth}px ${currentHeight}px`;
+                maskElement.style.maskSize = `${currentWidth}px ${currentHeight}px`;
+                maskElement.style.webkitMaskPosition = `${currentX}px ${currentY}px`;
+                maskElement.style.maskPosition = `${currentX}px ${currentY}px`;
+
+                // Sincronizamos exactamente igual la capa de color
+                const colorElement = document.getElementById('logo-color');
+                if (colorElement) {
+                    colorElement.style.backgroundSize = `${currentWidth}px ${currentHeight}px`;
+                    colorElement.style.backgroundPosition = `${currentX}px ${currentY}px`;
+                }
+
+                // Sincronizamos también la capa de flash blanco
+                const flashElement = document.getElementById('logo-flash');
+                if (flashElement) {
+                    flashElement.style.webkitMaskSize = `${currentWidth}px ${currentHeight}px`;
+                    flashElement.style.maskSize = `${currentWidth}px ${currentHeight}px`;
+                    flashElement.style.webkitMaskPosition = `${currentX}px ${currentY}px`;
+                    flashElement.style.maskPosition = `${currentX}px ${currentY}px`;
+                }
+            }
+
+            // Seteamos el frame inicial y recalculamos al redimensionar la ventana
+            updateMask();
+            window.addEventListener('resize', updateMask);
+
+            // Animamos nuestro valor de progreso con GSAP
+            tl.to(animData, {
+                progress: 1, 
+                ease: "power2.inOut",
+                duration: 5,
+                onUpdate: updateMask 
+            }, 0);
+        };
+        
+        // La opacidad del recorte (video) siempre está al 100%. 
+        // Hacemos aparecer el color real del logo por encima suavemente.
+        tl.to("#logo-color", 
+            { opacity: 1, duration: 4.8, ease: "power2.inOut" }, 
+            0
+        );
+
+        // Hacer aparecer la imagen principaltodos.jpeg (se revela para encajar perfecto)
+        tl.to("#hero-img", {
+            opacity: 1,
+            ease: "power1.inOut",
+            duration: 2.5
+        }, 1.5); // Empieza en el segundo 1.5
+
+        // --- DESVANECIMIENTO DEL LOGO AL FINAL ---
+        
+        /* Efecto de flash comentado
+        // 1. El logo brilla en blanco puro rápido justo al final del zoom (del segundo 4.8 al 5.0)
+        tl.to("#logo-flash", { opacity: 1, duration: 0.2, ease: "power2.in" }, 4.8);
+        
+        // 2. Justo cuando el flash está en su pico blanco (segundo 5.0), ocultamos de golpe el video y el color
+        tl.to("#logo-mask", { opacity: 0, duration: 0 }, 5.0);
+        tl.to("#logo-color", { opacity: 0, duration: 0 }, 5.0);
+        
+        // 3. El flash (logo blanco) se desvanece suavemente para revelar la imagen de fondo limpia
+        tl.to("#logo-flash", { opacity: 0, duration: 0.5, ease: "power2.out" }, 5.0);
+        */
+
+        // En lugar del flash, hacemos que el video y el color del logo se desvanezcan más tarde y de golpe
+        tl.to("#logo-mask", { opacity: 0, duration: 0.1, ease: "none" }, 4.9);
+        tl.to("#logo-color", { opacity: 0, duration: 0.1, ease: "none" }, 4.9);
+        tl.to({}, { duration: 0.7 });
+
+        
+        // --- MARGEN EXTRA DE SCROLL ---
+        // Agregamos tiempo muerto al final para que puedas seguir bajando 
+        // sin que empiece inmediatamente la siguiente sección.
+        
+
+    </script>
+}
