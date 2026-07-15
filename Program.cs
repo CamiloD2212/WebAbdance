@@ -19,6 +19,13 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "Recursos")),
+    RequestPath = "/Recursos"
+});
+
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();

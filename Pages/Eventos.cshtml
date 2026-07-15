@@ -1,0 +1,314 @@
+@page
+@model WebAbdance.Pages.EventosModel
+@{
+    ViewData["Title"] = "Eventos";
+}
+
+<style>
+    /* ============================================== */
+    /* ESTILOS TIMELINE INTERACTIVA                   */
+    /* ============================================== */
+    body {
+        /* Para prevenir rebotes en móviles */
+        overscroll-behavior-y: none;
+    }
+
+    .events-scroll-wrapper {
+        background: linear-gradient(180deg, #270359 0%, #5406BF 100%);
+        width: 100%;
+    }
+
+    .events-sticky-container {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+    }
+
+    .events-img-col {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        perspective: 1200px; /* Necesario para el efecto 3D */
+    }
+
+    .cube-wrapper {
+        width: 90%;
+        max-width: 400px;
+        aspect-ratio: 3/4; /* Adaptado al tamaño de banner vertical */
+        position: relative;
+        transform-style: preserve-3d;
+    }
+
+    .cube-img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        object-fit: cover;
+        border-radius: 1.5rem;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0,255,255,0.2);
+        border: 2px solid rgba(255,255,255,0.05);
+        opacity: 0; /* Controlado por GSAP */
+    }
+
+    /* Derecha: Textos */
+    .events-txt-col {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .timeline-vertical-line {
+        position: absolute;
+        left: 0;
+        top: 25%;
+        bottom: 25%;
+        width: 2px;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 0;
+    }
+
+    .timeline-dot {
+        position: absolute;
+        left: -4px;
+        top: 0%;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #00ffff;
+        box-shadow: 0 0 15px #00ffff;
+        z-index: 1;
+    }
+
+    .events-text-item {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        opacity: 0; /* Inicializado por GSAP */
+        top: 50%; /* Base para centrar */
+        padding-left: 2rem;
+    }
+
+    @@media (min-width: 768px) {
+        .events-text-item {
+            padding-left: 4rem;
+        }
+        .timeline-vertical-line {
+            left: 2rem;
+        }
+    }
+
+    /* Adaptación Mobile */
+    @@media (max-width: 768px) {
+        .events-sticky-container {
+            flex-direction: column;
+        }
+        .events-img-col {
+            height: 45vh;
+            align-items: flex-end;
+            padding-bottom: 2rem;
+        }
+        .events-txt-col {
+            height: 55vh;
+            align-items: flex-start;
+            padding-top: 2rem;
+        }
+        .cube-wrapper {
+            max-width: 250px;
+        }
+        .timeline-vertical-line {
+            display: none;
+        }
+        .events-text-item {
+            padding-left: 0;
+            text-align: center;
+            top: 10%; /* Ajuste para mobile */
+            transform: none !important;
+        }
+    }
+
+    /* Estilos Botón y Textos */
+    .neon-btn {
+        background-color: #cda052; 
+        color: #000;
+        box-shadow: 0 0 15px rgba(205, 160, 82, 0.6);
+        transition: all 0.3s ease;
+    }
+    .neon-btn:hover {
+        box-shadow: 0 0 25px rgba(205, 160, 82, 1);
+        background-color: #dfb365;
+    }
+</style>
+
+<!-- El wrapper define la altura total del scroll. Le sumamos 100vh extra para que aguante al final antes del footer. -->
+<div class="events-scroll-wrapper" style="height: @(Model.Eventos.Count * 100 + 100)vh;" id="scrollWrapper">
+    
+    <div class="events-sticky-container">
+        
+        <!-- COLUMNA IZQUIERDA: IMAGEN (CUBO ROTATORIO) -->
+        <div class="events-img-col w-full md:w-1/2">
+            <div class="cube-wrapper" id="cubeWrapper">
+                @for (int i = 0; i < Model.Eventos.Count; i++)
+                {
+                    <img src="@Model.Eventos[i].ImagenPortada" class="cube-img" id="cube-img-@i" alt="@Model.Eventos[i].Titulo" />
+                }
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: TEXTOS Y TIMELINE -->
+        <div class="events-txt-col w-full md:w-1/2 px-4 md:px-0">
+            
+            <div class="timeline-vertical-line hidden md:block">
+                <div class="timeline-dot" id="timelineDot"></div>
+            </div>
+
+            <div class="relative w-full max-w-xl mx-auto md:mx-0 h-full">
+                @for (int i = 0; i < Model.Eventos.Count; i++)
+                {
+                    var evento = Model.Eventos[i];
+                    <div class="events-text-item" id="text-item-@i">
+                        <span class="text-[#00ffff] font-bold text-sm tracking-widest uppercase mb-3 block" style="text-shadow: 0 0 5px rgba(0,255,255,0.4);">
+                            @((i + 1).ToString("D2")). @evento.FechaEvento.ToString("dd MMM yyyy") - @evento.Lugar
+                        </span>
+                        <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">@evento.Titulo</h2>
+                        <p class="text-gray-300 font-light mb-8 text-base md:text-lg leading-relaxed line-clamp-4">
+                            @evento.Descripcion
+                        </p>
+                        
+                        <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                            @if (DateTime.Now < evento.FechaCierreVenta)
+                            {
+                                <button class="neon-btn text-xs md:text-sm font-bold py-3 px-8 rounded-full uppercase tracking-wider">
+                                    Comprar Entrada
+                                </button>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            gsap.registerPlugin(ScrollTrigger);
+
+            const numEvents = @Model.Eventos.Count;
+            const wrapper = document.getElementById('scrollWrapper');
+            const cubeWrapper = document.getElementById('cubeWrapper');
+            const dot = document.getElementById('timelineDot');
+
+            // --- INICIALIZACIÓN DE ESTADOS ---
+            // Aseguramos que la primera imagen sea visible
+            gsap.set('.cube-img', { opacity: 0 });
+            gsap.set('#cube-img-0', { opacity: 1 });
+
+            // Inicializamos todos los textos: ocultos y abajo, excepto el primero que va al centro
+            const isMobile = window.innerWidth <= 768;
+            
+            if (!isMobile) {
+                gsap.set('.events-text-item', { yPercent: 50, opacity: 0 });
+                gsap.set('#text-item-0', { yPercent: -50, opacity: 1 });
+            } else {
+                // En móvil no usamos yPercent agresivo porque cambia el layout
+                gsap.set('.events-text-item', { y: 20, opacity: 0 });
+                gsap.set('#text-item-0', { y: 0, opacity: 1 });
+            }
+
+            if (wrapper && numEvents > 1) {
+                // Creamos el Timeline sincronizado con el Scroll
+                let tl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: wrapper,
+                        start: "top top",
+                        end: "bottom bottom",
+                        scrub: 1 // Suavidad de 1 segundo para seguir el scroll
+                    }
+                });
+
+                // Cada transición de paso a paso ocupará una fracción del scroll
+                const stepSize = 1 / (numEvents - 1); 
+
+                for (let i = 0; i < numEvents - 1; i++) {
+                    
+                    // 1. ROTACIÓN 3D (Flip de Tarjeta)
+                    // Primera mitad: Gira a 90 grados en Y (se pone de perfil e invisible)
+                    tl.to(cubeWrapper, {
+                        rotationY: 90,
+                        scale: 0.8,
+                        ease: "power2.in",
+                        duration: stepSize / 2
+                    }, i * stepSize);
+
+                    // 2. CAMBIO "MÁGICO" DE IMAGEN (Justo a la mitad, 90 grados Y)
+                    tl.set(`#cube-img-${i}`, { opacity: 0 }, i * stepSize + stepSize / 2);
+                    tl.set(`#cube-img-${i+1}`, { opacity: 1 }, i * stepSize + stepSize / 2);
+                    
+                    // Reseteamos el ángulo a -90 para que complete el giro hacia el frente
+                    tl.set(cubeWrapper, { rotationY: -90 }, i * stepSize + stepSize / 2);
+
+                    // Tercera mitad: Completa el giro de -90 a 0 y restaura escala
+                    tl.to(cubeWrapper, {
+                        rotationY: 0,
+                        scale: 1,
+                        ease: "power2.out",
+                        duration: stepSize / 2
+                    }, i * stepSize + stepSize / 2);
+
+                    // 4. ANIMACIÓN DE TEXTOS
+                    if (!isMobile) {
+                        // El texto actual desaparece hacia arriba
+                        tl.to(`#text-item-${i}`, {
+                            opacity: 0,
+                            yPercent: -150,
+                            duration: stepSize / 2,
+                            ease: "power2.in"
+                        }, i * stepSize);
+
+                        // El texto siguiente aparece desde abajo hasta el centro
+                        tl.fromTo(`#text-item-${i+1}`, 
+                            { opacity: 0, yPercent: 50 },
+                            { opacity: 1, yPercent: -50, duration: stepSize / 2, ease: "power2.out" },
+                            i * stepSize + stepSize / 2
+                        );
+                    } else {
+                        // Animación simplificada para móviles
+                        tl.to(`#text-item-${i}`, {
+                            opacity: 0,
+                            y: -20,
+                            duration: stepSize / 2,
+                            ease: "power2.in"
+                        }, i * stepSize);
+
+                        tl.fromTo(`#text-item-${i+1}`, 
+                            { opacity: 0, y: 20 },
+                            { opacity: 1, y: 0, duration: stepSize / 2, ease: "power2.out" },
+                            i * stepSize + stepSize / 2
+                        );
+                    }
+
+                    // 5. MOVIMIENTO DEL INDICADOR DE TIMELINE
+                    tl.to(dot, {
+                        top: `${((i + 1) / (numEvents - 1)) * 100}%`,
+                        ease: "none",
+                        duration: stepSize
+                    }, i * stepSize);
+                }
+
+                // --- TIEMPO MUERTO EXTRA AL FINAL ---
+                // Le damos un "paso" entero de duración sin animar nada.
+                // Esto hace que el usuario siga scrolleando, pero la vista se quede quieta,
+                // aguantando el último evento antes de soltar el pin e ir al footer.
+                tl.to({}, { duration: stepSize });
+            }
+        });
+    </script>
+}

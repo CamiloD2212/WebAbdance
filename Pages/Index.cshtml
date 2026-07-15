@@ -59,7 +59,7 @@
 
     /* Altura total del scroll para la animación (aumentada para dar margen al final) */
     .scroll-wrapper {
-        height: 300vh;
+        height: 400vh;
         background-color: #000;
     }
 
@@ -105,75 +105,6 @@
     </div>
 </section>
 
-<!-- SECCIÓN 2: EVENTOS -->
-<!-- Se agrega margin-top de 25vh para dejar espacio al cachito extra de la imagen -->
-<section id="eventos" class="min-h-screen bg-ab-dark py-20 px-4" style="margin-top: 25vh;">
-    <div class="max-w-7xl mx-auto">
-        <h2 class="text-4xl md:text-6xl font-bold mb-12 text-center text-transparent bg-clip-text bg-gradient-to-r from-ab-accent to-yellow-200">Eventos</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Card Shows -->
-            <div class="group relative overflow-hidden rounded-xl bg-gray-900 aspect-video hover:-translate-y-2 transition-transform duration-300">
-                <div class="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors z-10"></div>
-                <div class="absolute inset-0 flex flex-col items-center justify-center z-20">
-                    <h3 class="text-3xl font-bold text-white mb-2">Shows</h3>
-                    <p class="text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity">Nuestras próximas presentaciones</p>
-                </div>
-            </div>
-            <!-- Card Competencias -->
-            <div class="group relative overflow-hidden rounded-xl bg-gray-900 aspect-video hover:-translate-y-2 transition-transform duration-300">
-                <div class="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors z-10"></div>
-                <div class="absolute inset-0 flex flex-col items-center justify-center z-20">
-                    <h3 class="text-3xl font-bold text-white mb-2">Competencias</h3>
-                    <p class="text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity">Audiciones y torneos</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- SECCIÓN 3: DISCIPLINA -->
-<section id="disciplina" class="min-h-screen bg-black py-20 px-4">
-    <div class="max-w-7xl mx-auto">
-        <h2 class="text-4xl md:text-6xl font-bold mb-12 text-center text-white">Disciplina</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <!-- Ejemplo de items de disciplina -->
-            <div class="h-64 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-ab-accent transition-colors cursor-pointer group">
-                <span class="text-xl font-bold group-hover:text-black transition-colors">Hip Hop</span>
-            </div>
-            <div class="h-64 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-ab-accent transition-colors cursor-pointer group">
-                <span class="text-xl font-bold group-hover:text-black transition-colors">Jazz</span>
-            </div>
-            <div class="h-64 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-ab-accent transition-colors cursor-pointer group">
-                <span class="text-xl font-bold group-hover:text-black transition-colors">Contemporáneo</span>
-            </div>
-            <div class="h-64 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-ab-accent transition-colors cursor-pointer group">
-                <span class="text-xl font-bold group-hover:text-black transition-colors">Ballet</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- SECCIÓN 4: CONTACTO -->
-<section id="contacto" class="min-h-screen bg-ab-dark py-20 px-4 flex items-center">
-    <div class="max-w-3xl mx-auto w-full bg-gray-900 p-8 rounded-2xl shadow-2xl border border-white/5">
-        <h2 class="text-4xl font-bold mb-8 text-center text-white">Contacto</h2>
-        <form class="space-y-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-400 mb-2">Nombre</label>
-                <input type="text" class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-ab-accent transition-colors" />
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-400 mb-2">Email</label>
-                <input type="email" class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-ab-accent transition-colors" />
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-400 mb-2">Mensaje</label>
-                <textarea rows="4" class="w-full bg-black/50 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-ab-accent transition-colors"></textarea>
-            </div>
-            <button class="w-full bg-ab-accent text-black font-bold py-4 rounded-lg hover:bg-yellow-500 transition-colors">Enviar Mensaje</button>
-        </form>
-    </div>
-</section>
 
 @section Scripts {
     <script>
@@ -307,13 +238,18 @@
         // En lugar del flash, hacemos que el video y el color del logo se desvanezcan más tarde y de golpe
         tl.to("#logo-mask", { opacity: 0, duration: 0.1, ease: "none" }, 4.9);
         tl.to("#logo-color", { opacity: 0, duration: 0.1, ease: "none" }, 4.9);
-        tl.to({}, { duration: 0.7 });
+        
+        // --- TIEMPO MUERTO EXTRA AL FINAL ---
+        // Aumentado a 3.0 para que el usuario pueda apreciar la imagen final
+        // un buen rato antes de que el footer suba.
+        tl.to({}, { duration: 3.0 });
 
         
         // --- MARGEN EXTRA DE SCROLL ---
         // Agregamos tiempo muerto al final para que puedas seguir bajando 
         // sin que empiece inmediatamente la siguiente sección.
         
+
 
     </script>
 }
